@@ -177,6 +177,21 @@ SYSTEM='history -a; echo -en "\n${Color_Off}${Green}[Mem: ${MEM_COLOR}[$MEM_PERC
 #PROMPT_COMMAND='history -a;echo -en "\n\033[m\033[38;5;2m"$(( `sed -nu "s/MemFree:[\t ]\+\([0-9]\+\) kB/\1/p" /proc/meminfo`/1024))"\033[38;5;22m/"$((`sed -nu "s/MemTotal:[\t ]\+\([0-9]\+\) kB/\1/Ip" /proc/meminfo`/1024 ))MB"\t\033[m\033[38;5;55m$(< /proc/loadavg)\033[m"'
 PROMPT_COMMAND=my_command_prompt
 
+__git_ps1() 
+{
+    local b="$(git symbolic-ref HEAD 2>/dev/null)"
+    b="${b##refs/heads/}"
+    if [ -n "$b" ]; then
+        rev=$(git log --pretty=format:'%h' -n 1)
+        if [ $b == "master" ]; then
+            c=$Blue
+        else
+            c=$Yellow
+        fi
+        printf " $c(%s %s)$Color_Off " "$b" "$rev";
+    fi
+}
+
 PS1="\n\[${Red}\]\u@\h: \w\n\[${Blue}\]>>\[${Color_Off}\] "
 export PS1
 
