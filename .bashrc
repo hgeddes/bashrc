@@ -128,10 +128,35 @@ alias ks='ls'
 
 # Functions
 
+# set editor to your fav
 export EDITOR=/usr/bin/vim
 
 # find files of arg skipping files with svn in the name
 function ff() 
+{
+    local array=($(find * -type f -iname '*'$*'*' | grep -v svn))
+	local count=${#array[@]}
+
+	if [ "${count:-0}" -eq 1 ]; then
+		$EDITOR $array
+	else
+		for value in "${array[@]}"; do
+			echo "$value"
+		done
+	fi
+}
+
+function _auto_complete_ff
+{
+	complete -W "$(echo $(find * -type f -print | awk -F"/" '{print $NF}'))" ff
+}
+
+# add auto complete from find that shows the file names in the current tree
+# when using the ff command and then allows you to fully auto complete
+complete -F _auto_complete_ff ff 
+
+# find hidden files as well.  Can be noisy so made a seperate function
+function fh() 
 {
     local array=($(find . -type f -iname '*'$*'*' | grep -v svn))
 	local count=${#array[@]}
@@ -145,9 +170,14 @@ function ff()
 	fi
 }
 
+function _auto_complete_fh
+{
+	complete -W "$(echo $(find . -type f -print | awk -F"/" '{print $NF}'))" fh
+}
+
 # add auto complete from find that shows the file names in the current tree
 # when using the ff command and then allows you to fully auto complete
-complete -W "$(echo $(find . -type f -print | awk -F"/" '{print $NF}' ))" ff 
+complete -F _auto_complete_fh fh
 
 # (needs a recent version of egrep)
 function f()
