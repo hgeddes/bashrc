@@ -128,14 +128,16 @@ alias ks='ls'
 
 # Functions
 
+export EDITOR=/usr/bin/vim
+
 # find files of arg skipping files with svn in the name
 function ff() 
-{ 
-    local array=($(find . -type f -iname '*'$*'*' | grep -v svn;))
+{
+    local array=($(find . -type f -iname '*'$*'*' | grep -v svn))
 	local count=${#array[@]}
 
 	if [ "${count:-0}" -eq 1 ]; then
-		vim $array
+		$EDITOR $array
 	else
 		for value in "${array[@]}"; do
 			echo "$value"
@@ -145,7 +147,7 @@ function ff()
 
 # add auto complete from find that shows the file names in the current tree
 # when using the ff command and then allows you to fully auto complete
-complete -W "$(echo $(find * -type f -print | awk -F"/" '{print $NF}' ))" ff 
+complete -W "$(echo $(find . -type f -print | awk -F"/" '{print $NF}' ))" ff 
 
 # (needs a recent version of egrep)
 function f()
