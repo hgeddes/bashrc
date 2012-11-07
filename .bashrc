@@ -157,12 +157,24 @@ function ff()
 	local count=${#array[@]}
 
 	if [ "${count:-0}" -eq 1 ]; then
-echo $array
 		$EDITOR $array
 	else
+
+		i=1
 		for value in "${array[@]}"; do
-			echo "$value"
+			echo -e "$i:\t$value"
+			i=`expr $i + 1`
+
+			mylist[$i]=$value
 		done
+		echo
+		echo "Select the file you wish to open:"
+		echo "enter a non number to exit"
+		read input
+
+		if [ "$input" -eq "$input" 2> /dev/null ]; then
+			$EDITOR ${mylist[input]}
+		fi
 	fi
 }
 
