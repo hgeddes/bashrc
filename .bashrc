@@ -151,6 +151,8 @@ function _update_tree
 }
 
 # find files of arg skipping files with svn in the name
+# also gives a list if more that one file is found
+# and takes user input to ope the file
 function ff() 
 {
     local array=($(find * -type f -iname '*'$*'*' | grep -v svn))
@@ -158,8 +160,7 @@ function ff()
 
 	if [ "${count:-0}" -eq 1 ]; then
 		$EDITOR $array
-	else
-
+	elif [ "${count:-0}" -gt 1 ]; then
 		i=1
 		for value in "${array[@]}"; do
 			echo -e "$i:\t$value"
@@ -169,7 +170,7 @@ function ff()
 		done
 		echo
 		echo "Select the file you wish to open:"
-		echo "enter a non number to exit"
+		echo "(enter a non number to exit)"
 		read input
 
 		if [ "$input" -eq "$input" 2> /dev/null ]; then
