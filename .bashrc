@@ -102,10 +102,10 @@ __git_ps1()
 
 function _prompt_command
 {
-	_update_tree '*'
+	files=$(_update_tree '*')
 	_complete_ff
 
-	_update_tree '.'
+	hidden=$(_update_tree '.')
 	_complete_fh
 }
 
@@ -142,10 +142,12 @@ alias ks='ls'
 # set editor to your fav
 export EDITOR=/usr/bin/vim
 
+# returns the list of files based on the arg given
+# . returns all files including hidden
+# * returns all normal files
 function _update_tree
 {
-	files=$(find $* -type f -print | awk -F"/" '{print $NF}')
-	hidden=$files
+	echo $(find $* -type f -print | awk -F"/" '{print $NF}')
 }
 
 # find files of arg skipping files with svn in the name
@@ -164,10 +166,13 @@ echo $array
 	fi
 }
 
-function _auto_complete_ff
+# returns the word list of files from the tree
+function _auto_complete_file
 {
-	local array=($files)
-	local count=${#files[@]}
+	local file=$*
+
+	local array=($file)
+	local count=${#file[@]}
 
 	if [ "${count:=0}" -gt 0 ]; then
 		echo $files
@@ -180,7 +185,7 @@ function _auto_complete_ff
 # when using the ff command and then allows you to fully auto complete
 function _complete_ff
 {
-	complete -W "$(_auto_complete_ff)" ff
+	complete -W "$(_auto_complete_file $files)" ff
 }
 
 # find hidden files as well.  Can be noisy so made a seperate function
@@ -198,23 +203,11 @@ function fh()
 	fi
 }
 
-function _auto_complete_fh
-{
-	local array=($hidden)
-	local count=${#files[@]}
-
-	if [ "${count:-0}" -gt 0 ]; then
-		echo $hidden
-	else
-		echo ""
-	fi
-}
-
 # add auto complete from find that shows the file names in the current tree
 # when using the ff command and then allows you to fully auto complete
 function _complete_fh
 {
-	complete -W "$(_auto_complete_fh)" fh
+	complete -W "$(_auto_complete_fh $hidden)" fh
 }
 
 # (needs a recent version of egrep)
